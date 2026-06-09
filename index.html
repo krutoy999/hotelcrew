@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>МДК</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        /* Стиль для ошибок */
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        /* Стиль для ошибок о коде из смс */
+        #smsError {
+            color: red;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav-links">
+        <a href="#" onclick="showPage('hotels')">Отели</a>
+        <a href="#">Города</a>
+        <a href="#">Моя бронь</a>
+    </div>
+    <div class="logo-area" onclick="showPage('main')">
+        Hotel<b>Crew</b> <span class="red-star">★</span>
+    </div>
+    <!-- Вместо кнопки — контейнер для отображения email -->
+    <div id="topRightContainer" style="display: flex; align-items: center;">
+        <button class="btn-header-login" id="headerLoginBtn" onclick="showPage('login')">Войти</button>
+        <div id="userEmailDisplay"></div>
+    </div>
+</header>
+
+<main>
+    <section id="page-main" class="page active">
+        <div class="content-box">
+            <span style="color: var(--accent); font-weight: bold; text-transform: uppercase;">Добро пожаловать</span>
+            <h1 style="font-size: 3rem; margin-top: 10px;">Найдите свой идеальный уют</h1>
+            <p style="color: #666; max-width: 500px; margin: 20px auto;">Эксклюзивные предложения в лучших отелях мира. Начните свое путешествие с нами.</p>
+            <button class="btn-submit" style="width: auto; padding: 15px 40px;" onclick="showPage('hotels')">Смотреть варианты</button>
+        </div>
+    </section>
+
+    <section id="page-login" class="page">
+        <div class="content-box auth-card">
+            <h2 style="margin-bottom: 30px;">С возвращением</h2>
+            <!-- Область для отображения ошибок -->
+            <div id="errorContainer" class="error-message"></div>
+            <!-- Область для ошибок о коде из смс -->
+            <div id="smsError"></div>
+            <div class="input-group">
+                <label>Телефон</label>
+                <input type="text" id="user-login" placeholder="+7**********"/>
+            </div>
+            <div class="input-group">
+                <label>Почта</label>
+                <input type="text" id="user-login" placeholder="example@mail.com" />
+            </div>
+            <div class="input-group">
+                <label>Пароль</label>
+                <input type="password" placeholder="••••••••" id="user-password" />
+            </div>
+            <div class="input-group" style="margin-top: 20px;">
+                <label>Введите код из смс</label>
+                <input type="text" placeholder="Код из смс" id="sms-code" />
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; margin: 15px 0; text-align: left;">
+                <input type="checkbox" id="regAgree" />
+                <label for="regAgree" style="font-size: 14px; cursor: pointer;">Я согласен с обработкой данных</label>
+            </div>
+            <div class="login-footer">
+                <button class="btn-submit" onclick="handleLogin()">Войти в аккаунт</button>
+                <p style="font-size: 0.9rem; margin-top: 20px;">Нет аккаунта? <a href="#" style="color: var(--primary);">Создать профиль</a></p>
+            </div>
+        </div>
+    </section>
+
+    <section id="page-hotels" class="page">
+        <div class="content-box">
+            <div class="slider-container">
+                <div class="arrow">❮</div>
+                <div class="slider-text">Grand Plaza Hotel</div>
+                <div class="arrow">❯</div>
+            </div>
+            <div class="hotel-info">
+                <h3 style="color: var(--primary); margin-bottom: 5px;">Санкт-Петербург, Россия</h3>
+                <p>5 минут до метро • Завтрак включен • от 8 500 ₽</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<button class="support-btn" title="Поддержка">?</button>
+
+<script>
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById(`page-${pageId}`).classList.add('active');
+    }
+
+    function handleLogin() {
+        const errorContainer = document.getElementById('errorContainer');
+        const smsError = document.getElementById('smsError');
+        errorContainer.innerHTML = '';
+        smsError.innerHTML = '';
+
+        const agreeCheckbox = document.getElementById('regAgree');
+        const loginInput = document.getElementById('user-login').value.trim();
+        const passwordInput = document.getElementById('user-password').value;
+        const smsCode = document.getElementById('sms-code').value.trim();
+
+        if (!agreeCheckbox.checked) {
+            errorContainer.innerText = "Ошибка: Необходимо подтвердить согласие с обработкой данных.";
+            return;
+        }
+        if (!loginInput) {
+            errorContainer.innerText = "Ошибка: Введите почту или номер.";
+            return;
+        }
+
+        // Валидация телефона или email
+        const phonePattern = /^\d+$/;
+        const emailPattern = /@/;
+        if (phonePattern.test(loginInput)) {
+            if (loginInput.length !== 11) {
+                errorContainer.innerText = "Ошибка в телефоне: Номер должен состоять ровно из 11 цифр. Буквы запрещены.";
+                return;
+            }
+        } else if (!emailPattern.test(loginInput)) {
+            errorContainer.innerText = "Ошибка в Email: Адрес должен содержать '@'.";
+            return;
+        }
+
+        if (!passwordInput || passwordInput.length < 8) {
+            errorContainer.innerText = "Ошибка в пароле: Минимальная длина — 8 символов.";
+            return;
+        }
+
+        const hasLetters = /[A-Za-z]/.test(passwordInput);
+        const hasDigits = /\d/.test(passwordInput);
+        const hasSpecial = /[^A-Za-z\d]/.test(passwordInput);
+        if (!(hasLetters && hasDigits && hasSpecial)) {
+            errorContainer.innerText = "Ошибка в пароле: Пароль должен содержать буквы, цифры и спецсимволы.";
+            return;
+        }
+
+        // Проверка кода из смс
+        if (smsCode === "") {
+            document.getElementById('smsError').innerText = "Пожалуйста, введите код из смс.";
+            return;
+        }
+
+        // Если всё хорошо — показываем почту и переходим на главную
+        const emailDisplay = document.getElementById('userEmailDisplay');
+        emailDisplay.innerText = loginInput;
+        emailDisplay.style.display = 'block';
+
+        // Меняем кнопку "Войти" на email (скрываем кнопку)
+        document.getElementById('headerLoginBtn').style.display = 'none';
+
+        // Переход на главную
+        showPage('main');
+    }
+</script>
+</body>
+</html>
