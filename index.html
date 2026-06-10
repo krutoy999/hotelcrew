@@ -121,19 +121,20 @@
             return;
         }
         if (!loginInput) {
-            errorContainer.innerText = "Ошибка: Введите почту или номер.";
+            errorContainer.innerText = "Ошибка: Введите почту.";
             return;
         }
 
         // Валидация телефона или email
         const phonePattern = /^\d+$/;
-        const emailPattern = /@/;
         if (phonePattern.test(loginInput)) {
             if (loginInput.length !== 11) {
-                errorContainer.innerText = "Ошибка в телефоне: Номер должен состоять ровно из 11 цифр. Буквы запрещены.";
+                errorContainer.innerText = "Номер должен состоять ровно из 11 цифр.";
                 return;
             }
-        } else if (!emailPattern.test(loginInput)) {
+        }
+        const emailPattern = /@/;
+        if (!emailPattern.test(loginInput)) {
             errorContainer.innerText = "Ошибка в Email: Адрес должен содержать '@'.";
             return;
         }
@@ -153,7 +154,7 @@
 
         // Проверка кода из смс
         if (smsCode === "") {
-            document.getElementById('smsError').innerText = "Пожалуйста, введите код из смс.";
+            document.getElementById('smsError').innerText = "Пожалуйста, введите код из смс(4 цифры).";
             return;
         }
 
